@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = RubyIs::VERSION
   spec.authors       = ["Ales Huzik"]
   spec.email         = ["me@aguzik.net"]
-  spec.summary       = %q{double is { _1 * 2 }}
-  spec.description   = %q{Adds nice syntax for function definition, supporting unnamed arguments (_1, _2, ... _9)}
+  spec.summary       = %q{inc is {|a| a+1}}
+  spec.description   = %q{Adds nice syntax for function definition}
   spec.homepage      = "https://github.com/alesguzik/ruby-is"
   spec.license       = "MIT"
 
