@@ -44,7 +44,9 @@ module ::Kernel
     end
   end
 
-  always is ->(*args, &block){
+  memoized is ->(*args, &block){
     RubyIs.with_memo RubyIs.proc_or_block(args, block)
   }
+
+  alias always memoized
 end
