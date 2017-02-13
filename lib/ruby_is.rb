@@ -39,6 +39,10 @@ module ::Kernel
   def method_missing(name, *args, &block)
     if (args.count == 1) and args.first.is_a?(Hash) and args.first.has_key?(:__is__method_body)
       define_method name, args.first[:__is__method_body]
+      # at toplevel def creates private methods on Object
+      if TOPLEVEL_BINDING.eval('self') == self # We are in the context of 'main' object
+        private name
+      end
     else
       super
     end
