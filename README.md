@@ -15,10 +15,18 @@ Define small functions easier!
     inc is ->(a){ puts "calculating #{a}"; a+1 }
     inc 42 #=> "calculating 42"; 43
 
-    inc_cached is always {|a| inc a }
-    inc_cached 42 #=> "calculating 42"; 43
-    inc_cached 42 #=> 43
-    inc_cached 10 #=> "calculating 10"; 11
+    inc_m is always {|a| inc a }
+    # inc_m is memoized {|a| inc a } # this also works
+    inc_m 42 #=> "calculating 42"; 43
+    inc_m 42 #=> 43
+    inc_m 10 #=> "calculating 10"; 11
+
+    inc_m is cached(1) {|a| inc a }
+    # inc_m is cached(1.second) {|a| inc a }  # if active_support/time have been enabled
+    inc_m 42 #=> "calculating 42"; 43
+    inc_m 42 #=> 43
+    sleep 2
+    inc_m 42 #=> "calculating 42"; 43
 
 ## Installation
 

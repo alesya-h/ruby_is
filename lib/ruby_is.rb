@@ -15,14 +15,34 @@ module RubyIs
 
     def cache; @@cache ||= {}; end
 
-    def with_memo(f)
+    def eval_memoized(f, args, proc)
+      cache = RubyIs.cache
+      cache_key = [f, args, proc]
+      if cache.has_key?(cache_key)
+        cache[cache_key]
+      else
+        cache[cache_key] = f.call(*args, &proc)
+      end
+    end
+
+    def eval_time_cached(f, caching_time, args, proc)
+      cache = RubyIs.cache
+      cache_key = [f, args, proc]
+      if cache.has_key?(cache_key)
+        last_call_time, value = cache[cache_key]
+        return value if (Time.now - last_call_time) < caching_time
+      end
+      value = f.call(*args, &proc)
+      cache[cache_key] = [Time.now, value]
+      value
+    end
+
+    def with_memo(f, caching_time=nil)
       ->(*args, &proc){
-        cache = RubyIs.cache
-        cache_key = [f, args, proc]
-        if cache.has_key?(cache_key)
-          cache[cache_key]
+        if caching_time
+          RubyIs.eval_time_cached(f, caching_time, args, proc)
         else
-          cache[cache_key] = f.call(*args, &proc)
+          RubyIs.eval_memoized(f, args, proc)
         end
       }
     end
@@ -50,6 +70,10 @@ module ::Kernel
 
   memoized is ->(*args, &block){
     RubyIs.with_memo RubyIs.proc_or_block(args, block)
+  }
+
+  cached is ->(caching_time, *args, &block){
+    RubyIs.with_memo RubyIs.proc_or_block(args, block), caching_time
   }
 
   alias always memoized
